@@ -20,9 +20,11 @@ namespace Efficient_Updating_System
         
         public void Update()
         {
-            if (_updateAddQueue.Count > 0)
+            var updateQueueAddCount = _updateAddQueue.Count;
+            
+            if (updateQueueAddCount > 0)
             {
-                for (var i = 0; i < _updateAddQueue.Count; i++)
+                for (var i = 0; i < updateQueueAddCount; i++)
                 {
                     var element = _updateAddQueue[i];
                     
@@ -30,10 +32,12 @@ namespace Efficient_Updating_System
                     _updateAddQueue.Remove(element);
                 }
             }
+            
+            var updateQueueRemoveCount = _updateRemovalQueue.Count;
 
-            if (_updateRemovalQueue.Count > 0)
+            if (updateQueueRemoveCount > 0)
             {
-                for (var i = 0; i < _updateRemovalQueue.Count; i++)
+                for (var i = 0; i < updateQueueRemoveCount; i++)
                 {
                     var element = _updateRemovalQueue[i];
                     
@@ -49,9 +53,11 @@ namespace Efficient_Updating_System
         }
         public void FixedUpdate()
         {
-            if (_fixedUpdateAddQueue.Count > 0)
+            var fixedUpdateQueueAddCount = _fixedUpdateAddQueue.Count;
+            
+            if (fixedUpdateQueueAddCount > 0)
             {
-                for (int i = 0; i < _fixedUpdateAddQueue.Count; i++)
+                for (var i = 0; i < fixedUpdateQueueAddCount; i++)
                 {
                     var element = _fixedUpdateAddQueue[i];
                     
@@ -59,10 +65,12 @@ namespace Efficient_Updating_System
                     _fixedUpdateAddQueue.Remove(element);
                 }
             }
+            
+            var fixedUpdateQueueRemovalCount = _fixedUpdateRemovalQueue.Count;
 
-            if (_fixedUpdateRemovalQueue.Count > 0)
+            if (fixedUpdateQueueRemovalCount > 0)
             {
-                for (var i = 0; i < _fixedUpdateRemovalQueue.Count; i++)
+                for (var i = 0; i < fixedUpdateQueueRemovalCount; i++)
                 {
                     var element = _fixedUpdateRemovalQueue[i];
 
@@ -78,9 +86,11 @@ namespace Efficient_Updating_System
         } 
         public void LateUpdate()
         {
-            if (_lateUpdateAddQueue.Count > 0)
+            var lateUpdateQueueAddCount = _fixedUpdateAddQueue.Count;
+            
+            if (lateUpdateQueueAddCount > 0)
             {
-                for (var i = 0; i < _lateUpdateAddQueue.Count; i++)
+                for (var i = 0; i < lateUpdateQueueAddCount; i++)
                 {
                     var element = _lateUpdateAddQueue[i];
                     
@@ -88,10 +98,12 @@ namespace Efficient_Updating_System
                     _lateUpdateAddQueue.Remove(element);
                 }
             }
+            
+            var lateUpdateQueueRemovalCount = _fixedUpdateRemovalQueue.Count;
 
-            if (_lateUpdateRemovalQueue.Count > 0)
+            if (lateUpdateQueueRemovalCount > 0)
             {
-                for (var i = 0; i < _lateUpdateRemovalQueue.Count; i++)
+                for (var i = 0; i < lateUpdateQueueRemovalCount; i++)
                 {
                     var element = _lateUpdateRemovalQueue[i];
 
