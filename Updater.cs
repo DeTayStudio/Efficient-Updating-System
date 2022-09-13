@@ -6,130 +6,141 @@ namespace Efficient_Updating_System
 {
     public class Updater : MonoBehaviour
     {
-        private readonly List<IUpdate> _updateQueue = new();
-        private readonly List<IUpdate> _updateAddQueue = new();
-        private readonly List<IUpdate> _updateRemovalQueue = new();
+        private static Updater _instance;
         
-        private readonly List<IFixedUpdate> _fixedUpdateQueue = new();
-        private readonly List<IFixedUpdate> _fixedUpdateAddQueue = new();
-        private readonly List<IFixedUpdate> _fixedUpdateRemovalQueue = new();
+        private static readonly List<IUpdate> UpdateQueue = new();
+        private static readonly List<IUpdate> UpdateAddQueue = new();
+        private static readonly List<IUpdate> UpdateRemovalQueue = new();
         
-        private readonly List<ILateUpdate> _lateUpdateQueue = new();
-        private readonly List<ILateUpdate> _lateUpdateAddQueue = new();
-        private readonly List<ILateUpdate> _lateUpdateRemovalQueue = new();
+        private static readonly List<IFixedUpdate> FixedUpdateQueue = new();
+        private static readonly List<IFixedUpdate> FixedUpdateAddQueue = new();
+        private static readonly List<IFixedUpdate> FixedUpdateRemovalQueue = new();
         
+        private static readonly List<ILateUpdate> LateUpdateQueue = new();
+        private static readonly List<ILateUpdate> LateUpdateAddQueue = new();
+        private static readonly List<ILateUpdate> LateUpdateRemovalQueue = new();
+
+        private void Awake()
+        {
+            if(_instance != null) Destroy(this);
+            else
+            {
+                _instance = this;
+            }
+        }
+
         public void Update()
         {
-            var updateQueueAddCount = _updateAddQueue.Count;
+            var updateQueueAddCount = UpdateAddQueue.Count;
             
             if (updateQueueAddCount > 0)
             {
                 for (var i = 0; i < updateQueueAddCount; i++)
                 {
-                    var element = _updateAddQueue[i];
+                    var element = UpdateAddQueue[i];
                     
-                    _updateQueue.Add(element);
-                    _updateAddQueue.Remove(element);
+                    UpdateQueue.Add(element);
+                    UpdateAddQueue.Remove(element);
                 }
             }
             
-            var updateQueueRemoveCount = _updateRemovalQueue.Count;
+            var updateQueueRemoveCount = UpdateRemovalQueue.Count;
 
             if (updateQueueRemoveCount > 0)
             {
                 for (var i = 0; i < updateQueueRemoveCount; i++)
                 {
-                    var element = _updateRemovalQueue[i];
+                    var element = UpdateRemovalQueue[i];
                     
-                    _updateQueue.Remove(element);
-                    _updateRemovalQueue.Remove(element);
+                    UpdateQueue.Remove(element);
+                    UpdateRemovalQueue.Remove(element);
                 }
             }
 
-            foreach (var update in _updateQueue)
+            foreach (var update in UpdateQueue)
             {
                 update.EfficientUpdate(Time.deltaTime);
             }
         }
         public void FixedUpdate()
         {
-            var fixedUpdateQueueAddCount = _fixedUpdateAddQueue.Count;
+            var fixedUpdateQueueAddCount = FixedUpdateAddQueue.Count;
             
             if (fixedUpdateQueueAddCount > 0)
             {
                 for (var i = 0; i < fixedUpdateQueueAddCount; i++)
                 {
-                    var element = _fixedUpdateAddQueue[i];
+                    var element = FixedUpdateAddQueue[i];
                     
-                    _fixedUpdateQueue.Add(element);
-                    _fixedUpdateAddQueue.Remove(element);
+                    FixedUpdateQueue.Add(element);
+                    FixedUpdateAddQueue.Remove(element);
                 }
             }
             
-            var fixedUpdateQueueRemovalCount = _fixedUpdateRemovalQueue.Count;
+            var fixedUpdateQueueRemovalCount = FixedUpdateRemovalQueue.Count;
 
             if (fixedUpdateQueueRemovalCount > 0)
             {
                 for (var i = 0; i < fixedUpdateQueueRemovalCount; i++)
                 {
-                    var element = _fixedUpdateRemovalQueue[i];
+                    var element = FixedUpdateRemovalQueue[i];
 
-                    _fixedUpdateQueue.Remove(element);
-                    _fixedUpdateRemovalQueue.Remove(element);
+                    FixedUpdateQueue.Remove(element);
+                    FixedUpdateRemovalQueue.Remove(element);
                 }
             }
 
-            foreach (var fixedUpdate in _fixedUpdateQueue)
+            foreach (var fixedUpdate in FixedUpdateQueue)
             {
                 fixedUpdate.EfficientFixedUpdate(Time.deltaTime);
             }
         } 
         public void LateUpdate()
         {
-            var lateUpdateQueueAddCount = _fixedUpdateAddQueue.Count;
+            var lateUpdateQueueAddCount = FixedUpdateAddQueue.Count;
             
             if (lateUpdateQueueAddCount > 0)
             {
                 for (var i = 0; i < lateUpdateQueueAddCount; i++)
                 {
-                    var element = _lateUpdateAddQueue[i];
+                    var element = LateUpdateAddQueue[i];
                     
-                    _lateUpdateQueue.Add(element);
-                    _lateUpdateAddQueue.Remove(element);
+                    LateUpdateQueue.Add(element);
+                    LateUpdateAddQueue.Remove(element);
                 }
             }
             
-            var lateUpdateQueueRemovalCount = _fixedUpdateRemovalQueue.Count;
+            var lateUpdateQueueRemovalCount = FixedUpdateRemovalQueue.Count;
 
             if (lateUpdateQueueRemovalCount > 0)
             {
                 for (var i = 0; i < lateUpdateQueueRemovalCount; i++)
                 {
-                    var element = _lateUpdateRemovalQueue[i];
+                    var element = LateUpdateRemovalQueue[i];
 
-                    _lateUpdateQueue.Remove(element);
-                    _lateUpdateRemovalQueue.Remove(element);
+                    LateUpdateQueue.Remove(element);
+                    LateUpdateRemovalQueue.Remove(element);
                 }
             }
 
-            foreach (var lateUpdate in _lateUpdateQueue)
+            foreach (var lateUpdate in LateUpdateQueue)
             {
                 lateUpdate.EfficientLateUpdate(Time.deltaTime);
             }
         }
 
-        public void RegisterUpdate(IAbstractUpdate script, UpdateType updateType)
+        public static void Register(IAbstractUpdate script, UpdateType updateType)
         {
             switch (updateType)
             {
                 case UpdateType.Update:
-                    _updateAddQueue.Add((IUpdate)script);
+                    UpdateAddQueue.Add((IUpdate)script);
                     break;
                 case UpdateType.FixedUpdate:
-                    _fixedUpdateAddQueue.Add((IFixedUpdate)script);
+                    FixedUpdateAddQueue.Add((IFixedUpdate)script);
                     break;
                 case UpdateType.LateUpdate:
-                    _lateUpdateAddQueue.Add((ILateUpdate)script);
+                    LateUpdateAddQueue.Add((ILateUpdate)script);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(updateType), updateType, null);
@@ -137,18 +148,18 @@ namespace Efficient_Updating_System
             
             Debug.Log($"Registered {script} to {updateType} queue. ");
         }
-        public void UnregisterUpdate(IAbstractUpdate script, UpdateType updateType)
+        public static void Unregister(IAbstractUpdate script, UpdateType updateType)
         {
             switch (updateType)
             {
                 case UpdateType.Update:
-                    _updateRemovalQueue.Add((IUpdate)script);
+                    UpdateRemovalQueue.Add((IUpdate)script);
                     break;
                 case UpdateType.FixedUpdate:
-                    _fixedUpdateRemovalQueue.Add((IFixedUpdate)script);
+                    FixedUpdateRemovalQueue.Add((IFixedUpdate)script);
                     break;
                 case UpdateType.LateUpdate:
-                    _lateUpdateRemovalQueue.Add((ILateUpdate)script);
+                    LateUpdateRemovalQueue.Add((ILateUpdate)script);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(updateType), updateType, null);
